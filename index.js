@@ -181,10 +181,10 @@ app.get('/rent', verifyToken, async (req, res) => {
   // Protected route for managers
   app.get('/photo/profile', verifyToken, checkUserRole('photo'), async (req, res) => {
     try {
-      const manager = await User.findByPk(req.user.id);
-      if (!manager) return res.status(404).json({ error: 'Manager not found' });
+      const photo = await User.findByPk(req.user.id);
+      if (!photo) return res.status(404).json({ error: 'Manager not found' });
       
-      res.json({ id: manager.id, firstname: manager.firstname, lastname: manager.lastname, email: manager.email, role: manager.role });
+      res.json({ id: photo.id, firstname: photo.firstname, lastname: photo.lastname, email: photo.email, role: photo.role });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
