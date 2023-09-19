@@ -97,7 +97,7 @@ app.post('/registerforuser', async (req, res) => {
     }
   });
   
-  // Route to register a new admin
+  // Route to register a new rent 
   app.post('/registerforrent', async (req, res) => {
     try {
       const { firstname, lastname, email, password } = req.body;
@@ -167,53 +167,53 @@ app.get('/rent', verifyToken, async (req, res) => {
 
 
   // Protected route for users
-  app.get('/user/profile', verifyToken, checkUserRole('user'), async (req, res) => {
-    try {
-      const user = await User.findByPk(req.user.id);
-      if (!user) return res.status(404).json({ error: 'User not found' });
+//   app.get('/user/profile', verifyToken, checkUserRole('user'), async (req, res) => {
+//     try {
+//       const user = await User.findByPk(req.user.id);
+//       if (!user) return res.status(404).json({ error: 'User not found' });
       
-      res.json({ id: user.id, firstname: user.firstname, lastname: user.lastname, email: user.email, role: user.role });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+//       res.json({ id: user.id, firstname: user.firstname, lastname: user.lastname, email: user.email, role: user.role });
+//     } catch (error) {
+//       res.status(500).json({ error: error.message });
+//     }
+//   });
   
-  // Protected route for managers
-  app.get('/photo/profile', verifyToken, checkUserRole('photo'), async (req, res) => {
-    try {
-      const photo = await User.findByPk(req.user.id);
-      if (!photo) return res.status(404).json({ error: 'Manager not found' });
+//   // Protected route for managers
+//   app.get('/photo/profile', verifyToken, checkUserRole('photo'), async (req, res) => {
+//     try {
+//       const photo = await User.findByPk(req.user.id);
+//       if (!photo) return res.status(404).json({ error: 'Manager not found' });
       
-      res.json({ id: photo.id, firstname: photo.firstname, lastname: photo.lastname, email: photo.email, role: photo.role });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+//       res.json({ id: photo.id, firstname: photo.firstname, lastname: photo.lastname, email: photo.email, role: photo.role });
+//     } catch (error) {
+//       res.status(500).json({ error: error.message });
+//     }
+//   });
   
-  // Protected route for admins
-  app.get('/admin/profile', verifyToken, checkUserRole('admin'), async (req, res) => {
-    try {
-      const admin = await User.findByPk(req.user.id);
-      if (!admin) return res.status(404).json({ error: 'Admin not found' });
+//   // Protected route for admins
+//   app.get('/admin/profile', verifyToken, checkUserRole('admin'), async (req, res) => {
+//     try {
+//       const admin = await User.findByPk(req.user.id);
+//       if (!admin) return res.status(404).json({ error: 'Admin not found' });
       
-      res.json({ id: admin.id, firstname: admin.firstname, lastname: admin.lastname, email: admin.email, role: admin.role });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+//       res.json({ id: admin.id, firstname: admin.firstname, lastname: admin.lastname, email: admin.email, role: admin.role });
+//     } catch (error) {
+//       res.status(500).json({ error: error.message });
+//     }
+//   });
   
 
-// Route to get user profile with role check
-app.get('/profile', verifyToken, async (req, res) => {
-  try {
-    const user = await User.findByPk(req.user.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+// // Route to get user profile with role check
+// app.get('/profile', verifyToken, async (req, res) => {
+//   try {
+//     const user = await User.findByPk(req.user.id);
+//     if (!user) return res.status(404).json({ error: 'User not found' });
     
-    res.json({ id: user.id, firstname: user.firstname, lastname: user.lastname, email: user.email, role: user.role });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+//     res.json({ id: user.id, firstname: user.firstname, lastname: user.lastname, email: user.email, role: user.role });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// });
 
 
 app.listen(port, () => {
