@@ -165,6 +165,38 @@ app.get('/rent', verifyToken, async (req, res) => {
   }
 });
 
+// Protected route for getting a specific photo by ID
+app.get('/photographer/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const photographer = await User.findOne({ where: { id , role : 'photo' } });
+
+    if (!photographer) {
+      return res.status(404).json({ error: 'ไม่พบช่างภาพ' });
+    }
+
+    res.json(photographer);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+app.get('/rent/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const rent = await User.findOne({ where: { id , role : 'rent' } });
+
+    if (!rent) {
+      return res.status(404).json({ error: 'ไม่พบผู้ให้เช่าอุปกรณ์' });
+    }
+
+    res.json(rent);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
   // Protected route for users
 //   app.get('/user/profile', verifyToken, checkUserRole('user'), async (req, res) => {
@@ -178,7 +210,7 @@ app.get('/rent', verifyToken, async (req, res) => {
 //     }
 //   });
   
-//   // Protected route for managers
+//   // Protected route for photographers
 //   app.get('/photo/profile', verifyToken, checkUserRole('photo'), async (req, res) => {
 //     try {
 //       const photo = await User.findByPk(req.user.id);
