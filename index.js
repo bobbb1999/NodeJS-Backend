@@ -21,29 +21,194 @@ const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, pr
   dialect: 'mysql',
 });
 
-const User = sequelize.define('User', {
-  firstname: {
-    type: Sequelize.STRING,
+// โมเดลผู้ใช้
+const User = sequelize.define(
+  "users",
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    email: {
+      type: Sequelize.STRING,
+      unique: true,
+      allowNull: false,
+    },
+    password: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    firstname: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    lastname: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    role: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// โมเดลโปรไฟล์ช่างภาพ
+const PhotographerProfile = sequelize.define(
+  "photographer_profile",
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    user_id: {
+      type: Sequelize.INTEGER,
+      foreignKey: {
+        references: {
+          table: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+      },
+      allowNull: false,
+    },
+    birthday: {
+      type: Sequelize.DATE,
+      allowNull: false,
+    },
+    address: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    id_card: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    image_id_card: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    image_profile: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    province: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    job_type: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const reviews = sequelize.define("reviews", {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  title: {
+    type: Sequelize.STRING(255),
     allowNull: false,
   },
-  lastname: {
-    type: Sequelize.STRING,
+  content: {
+    type: Sequelize.TEXT,
     allowNull: false,
   },
-  email: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    unique: true,
-  },
-  password: {
-    type: Sequelize.STRING,
+  rating: {
+    type: Sequelize.INTEGER,
     allowNull: false,
   },
-  role: {
-    type: Sequelize.STRING,
+  user_id: {
+    type: Sequelize.INTEGER,
+    foreignKey: {
+      references: {
+        table: "users",
+        key: "id",
+      },
+      onDelete: "CASCADE",
+    },
     allowNull: false,
+  },
+  equipment_rental_profile_id: {
+    type: Sequelize.INTEGER,
+    foreignKey: {
+      references: {
+        table: "photography_equipment_rental_profile",
+        key: "id",
+      },
+      onDelete: "CASCADE",
+    },
+    allowNull: true, 
+  },
+  photographer_profile_id: {
+    type: Sequelize.INTEGER,
+    foreignKey: {
+      references: {
+        table: "photographer_profile",
+        key: "id",
+      },
+      onDelete: "CASCADE",
+    },
+    allowNull: true, 
   },
 });
+
+// โมเดลโปรไฟล์ผู้ให้เช่าอุปกรณ์ถ่ายภาพ
+const PhotographyEquipmentRentalProfile = sequelize.define(
+  "photography_equipment_rental_profile",
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    user_id: {
+      type: Sequelize.INTEGER,
+      foreignKey: {
+        references: {
+          table: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+      },
+      allowNull: false,
+    },
+    birthday: {
+      type: Sequelize.DATE,
+      allowNull: false,
+    },
+    address: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    id_card: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    image_id_card: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    image_profile: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    }
+  },
+  {
+    timestamps: true,
+  }
+);
 
 sequelize.sync();
 
