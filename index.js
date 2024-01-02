@@ -105,15 +105,15 @@ const PhotographerVerify = sequelize.define(
       type: Sequelize.STRING,
       allowNull: true,
     },
-    imageUrl: {
+    imageProfile: {
       type: Sequelize.BLOB('long'), 
       allowNull: true, 
     },
-    imageUrlOne: {
+    imageCardId: {
       type: Sequelize.BLOB('long'),
       allowNull: true,
     },
-    imageUrlTwo: {
+    imageFace: {
       type: Sequelize.BLOB('long'),
       allowNull: true,
     },
@@ -251,39 +251,39 @@ const PhotographerProfile = sequelize.define(
         },
         onDelete: "CASCADE",
       },
-      allowNull: false,
+      allowNull: true,
     },
-    jobtypes: {
+    username: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    provinc: {
+    about: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    line_id: {
+    lineId: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    facebook: {
+    Facebook: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    instgram: {
+    Instagram: {
       type: Sequelize.STRING,
       allowNull: false,
     },
-    tel: {
-      type: Sequelize.STRING,
-      allowNull: false,
+    selectedOptions: {
+      type: Sequelize.JSON,
+      allowNull: true,
     },
-    image_profile: {
-      type: Sequelize.STRING,
-      allowNull: false,
+    selectedOptions2: {
+      type: Sequelize.JSON,
+      allowNull: true,
     },
-    description: {
-      type: Sequelize.STRING,
-      allowNull: false,
+    image: {
+      type: Sequelize.BLOB('long'),
+      allowNull: true,
     },
   },
   {
@@ -348,6 +348,7 @@ const RentEquipmentProfile = sequelize.define(
   }
 );
 
+
 sequelize.sync();
 
 // Middleware to verify JWT token
@@ -379,11 +380,35 @@ const verifyTokenAndGetUser = (req, res, next) => {
   }
 };
 
+app.post('/api/accountprofile', async (req, res) => {
+  try {
+    const { username, about, lineId, Facebook, Instagram, selectedOptions, selectedOptions2, image } = req.body;
+
+    // Save the form data to the database
+    const NewPhotographerProfile = await PhotographerProfile.create({
+      username,
+      about,
+      lineId,
+      Facebook,
+      Instagram,
+      selectedOptions,
+      selectedOptions2,
+      image,
+    });
+
+    // Respond with a success message
+    res.status(201).json({ message: 'Form data saved successfully', PhotographerProfile : NewPhotographerProfile  });
+  } catch (error) {
+    console.error('Error saving form data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.post("/api/submitData",verifyToken, async (req, res) => {
   try {
     const user_id = req.user.id;
     // Extract data from the request body
-    const {fullName, email, selectedDate,lineId,selectedJobs,address,idCardNumber,imageUrl,imageUrlTwo,imageUrlOne } = req.body;
+    const {fullName, email, selectedDate,lineId,selectedJobs,address,idCardNumber,imageProfile,imageCardId,imageFace } = req.body;
     
     // Create a new user record in the database
     const newPhotographerVerify = await PhotographerVerify.create({
@@ -395,9 +420,9 @@ app.post("/api/submitData",verifyToken, async (req, res) => {
       selectedJobs,
       address,
       idCardNumber,
-      imageUrl,
-      imageUrlTwo,
-      imageUrlOne
+      imageProfile,
+      imageCardId,
+      imageFace
       // Add other fields here based on your data model
     });
 
