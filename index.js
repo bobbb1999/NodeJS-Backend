@@ -58,8 +58,8 @@ const User = sequelize.define(
 );
 
 // โมเดลโปรไฟล์ช่างภาพ
-const PhotographerProfile = sequelize.define(
-  "photographer_profile",
+const PhotographerVerify = sequelize.define(
+  "photographer_verify",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -75,35 +75,47 @@ const PhotographerProfile = sequelize.define(
         },
         onDelete: "CASCADE",
       },
-      allowNull: false,
+      allowNull: true,
     },
-    birthday: {
+    fullName: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    selectedDate: {
       type: Sequelize.DATE,
-      allowNull: false,
+      allowNull: true,
+    },
+    lineId: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
+    selectedJobs: {
+      type: Sequelize.JSON,
+      allowNull: true,
+    },
+    email: {
+      type: Sequelize.STRING,
+      allowNull: true,
     },
     address: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
-    id_card: {
+    idCardNumber: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
-    image_id_card: {
-      type: Sequelize.STRING,
-      allowNull: false,
+    imageUrl: {
+      type: Sequelize.BLOB('long'), 
+      allowNull: true, 
     },
-    image_profile: {
-      type: Sequelize.STRING,
-      allowNull: false,
+    imageUrlOne: {
+      type: Sequelize.BLOB('long'),
+      allowNull: true,
     },
-    province: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    job_type: {
-      type: Sequelize.STRING,
-      allowNull: false,
+    imageUrlTwo: {
+      type: Sequelize.BLOB('long'),
+      allowNull: true,
     },
   },
   {
@@ -166,7 +178,7 @@ const reviews = sequelize.define("reviews", {
 
 // โมเดลโปรไฟล์ผู้ให้เช่าอุปกรณ์ถ่ายภาพ
 const PhotographyEquipmentRentalProfile = sequelize.define(
-  "photography_equipment_rental_profile",
+  "equipment_rental_verify",
   {
     id: {
       type: Sequelize.INTEGER,
@@ -184,11 +196,23 @@ const PhotographyEquipmentRentalProfile = sequelize.define(
       },
       allowNull: false,
     },
+    firstname: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    lastname: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
     birthday: {
       type: Sequelize.DATE,
       allowNull: false,
     },
     address: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    email: {
       type: Sequelize.STRING,
       allowNull: false,
     },
@@ -203,7 +227,121 @@ const PhotographyEquipmentRentalProfile = sequelize.define(
     image_profile: {
       type: Sequelize.STRING,
       allowNull: false,
-    }
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const PhotographerProfile = sequelize.define(
+  "photographer_profile",
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    user_id: {
+      type: Sequelize.INTEGER,
+      foreignKey: {
+        references: {
+          table: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+      },
+      allowNull: false,
+    },
+    jobtypes: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    provinc: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    line_id: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    facebook: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    instgram: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    tel: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    image_profile: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    description: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+const RentEquipmentProfile = sequelize.define(
+  "RentEquipment_profile",
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    user_id: {
+      type: Sequelize.INTEGER,
+      foreignKey: {
+        references: {
+          table: "users",
+          key: "id",
+        },
+        onDelete: "CASCADE",
+      },
+      allowNull: false,
+    },
+    jobtypes: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    provinc: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    line_id: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    facebook: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    instgram: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    tel: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    image_profile: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    description: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
   },
   {
     timestamps: true,
@@ -227,6 +365,50 @@ const verifyToken = (req, res, next) => {
 };
 
 const users = [];
+
+const verifyTokenAndGetUser = (req, res, next) => {
+  const token = req.header('Authorization');
+  if (!token) return res.status(401).send('Access Denied');
+
+  try {
+    const decoded = jwt_decode(token);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(400).send('Invalid Token');
+  }
+};
+
+app.post("/api/submitData",verifyToken, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+    // Extract data from the request body
+    const {fullName, email, selectedDate,lineId,selectedJobs,address,idCardNumber,imageUrl,imageUrlTwo,imageUrlOne } = req.body;
+    
+    // Create a new user record in the database
+    const newPhotographerVerify = await PhotographerVerify.create({
+      user_id,
+      fullName,
+      email,
+      selectedDate,
+      lineId,
+      selectedJobs,
+      address,
+      idCardNumber,
+      imageUrl,
+      imageUrlTwo,
+      imageUrlOne
+      // Add other fields here based on your data model
+    });
+
+    // Respond with a success message and the created user
+    res.status(201).json({ message: "Data submitted successfully", PhotographerVerify: newPhotographerVerify });
+  } catch (error) {
+    console.error("Error submitting data:", error);
+    // Handle errors and respond with an error message
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
 
 // Route to register a new user
 app.post('/registerforuser', async (req, res) => {
