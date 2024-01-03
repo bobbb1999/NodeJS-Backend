@@ -16,6 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
+
 const sequelize = new Sequelize(process.env.DB_DATABASE, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
   dialect: 'mysql',
@@ -434,6 +435,21 @@ app.post("/api/submitData",verifyToken, async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
+app.get('/api/getVerifiedUsers', async (req, res) => {
+  try {
+    // ดึงข้อมูลผู้ใช้ที่ผ่านการ verify จากตาราง photographer_verify
+    const verifiedUsers = await PhotographerVerify.findAll();
+
+    // ส่งข้อมูลกลับไปยัง React App ในรูปแบบ JSON
+    res.json(verifiedUsers);
+  } catch (error) {
+    console.error('Error fetching verified users:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 // Route to register a new user
 app.post('/registerforuser', async (req, res) => {
